@@ -1,0 +1,299 @@
+namespace org.acme
+
+participant Patient identified by id {
+  o String id
+  o String nic
+  o String dateOfBirth
+  o String bloodGroup
+  o String maritalStatus
+  o String address
+  o String phoneNo
+  o String mobileNo
+  o String email
+  o String gender
+  o String latitude
+  o String longitude
+  o String fullName
+  o String imagePath
+  o String token
+  o Double height
+  o Double weight
+  o Boolean isPremium
+  -->  City city optional
+}
+
+asset City identified by id {
+o String id
+o String name 
+o String province
+}
+
+participant Doctor identified by id {
+  o String id
+  o String fullName
+  o String specialization
+  o String experiemce
+  o String location
+  o String mobileNo
+  o String imagePath
+  o Integer status
+  o Integer rating
+  o String gender
+  o Double longitude
+  o Double latitude
+  o String pmdcNo
+  o String fatherName
+  o String isSpecialist
+  o String token
+  o String email
+  o String cnic
+  o String ntn
+  o String filerStatus
+  o String transTime
+ 
+  --> Schedule schedule optional
+  }
+
+enum Relationship{
+  o Father
+  o Mother
+  o Sister
+  o Brother
+  o Wife
+  o Husband
+  o Son 
+  o Daughter
+}
+
+participant PatientRelative identified by patientRelativeID{
+  o String patientRelativeID
+  o Relationship relationship
+  --> Patient patient
+}
+
+asset Schedule identified by scheduleID {
+ o String scheduleID
+ o Availability[] availability
+ --> Doctor doctor
+}
+  
+concept Availability {
+o WeekDay day 
+o Hours hour 
+}
+
+enum WeekDay {
+o MON
+o TUE
+o WED
+o THU
+o FRI
+o SAT
+o SUN
+}
+
+enum Hours {
+o H00
+o H01
+o H02
+o H03
+o H04
+o H05
+o H06
+o H07
+o H08
+o H09
+o H10
+o H11
+o H12
+o H13
+o H14
+o H15
+o H16
+o H17
+o H18
+o H19
+o H20
+o H21
+o H22
+o H23
+
+}
+  
+transaction Scheduler{
+  o Schedule schedule
+  --> Doctor doctor
+}
+
+transaction GetAvailableDoctors{
+  o Availability availability
+}
+
+participant Lab identified by labID {
+  o String labID
+  o String contact
+}
+
+participant Hospital identified by hospitalID {
+  o String hospitalID
+  o String contact
+}
+
+participant Pharmacy identified by pharmacyID {
+  o String pharmacyID
+  o String contact
+  o String pharmacyMedDB
+  o String pharmacyName
+}
+
+asset TreatmentLabTest identified by treatmentLabTestID {
+  o String treatmentLabTestID
+  o String testName
+  o String testResult default = 'Not Updated'
+  --> Treatment treatment
+}
+
+asset SharedLabTest identified by sharedLabTestID{
+  o String sharedLabTestID
+  o Boolean testCompleted default = false
+  --> TreatmentLabTest treatmentLabTest 
+  --> Lab lab 
+}
+
+concept Medicine {
+  o String name
+  o String mg
+  o String amount
+}
+
+asset TreatmentDrugs identified by treatmentDrugsID{
+  o String treatmentDrugsID
+  o Medicine[] medicine 
+  --> Treatment treatment
+}
+
+asset SharedDrugs identified by sharedDrugID{
+  o String sharedDrugID
+  o String availability default = 'Not Updated'
+  o String price default = 'Not Updated'
+  o Boolean orderCompleted default = false
+
+  --> TreatmentDrugs treatmentDrugs 
+  --> Pharmacy pharmacy
+}
+
+asset HospitalTreatment identified by hospTreatmentID{
+  o String hospTreatmentID
+  o String stuff
+  --> Treatment treatment
+}
+
+asset SharedHospital identified by sharedHospitalID{
+  o String sharedHospitalID
+  --> Treatment treatment
+  --> Hospital hospital 
+}
+
+asset Treatment identified by treatmentID{
+	o String treatmentID
+  o String procedure
+  o Boolean hospitalVisitNeeded
+  o Boolean medRequired
+  o Boolean labTestRequired
+
+  --> Consultation consultation
+}
+
+asset Consultation identified by consultationID {
+  o String consultationID
+  o String illnessDescription 
+  o DateTime transTime
+  o DateTime endTime
+  o String type
+  o String status 
+  o String message default = 'Not Updated'
+  o Boolean consultationCompleted default = false
+
+  --> Patient patient
+  --> Doctor doctor
+}
+asset Illness identified by illnessId {
+  o String illnessId
+  o String bodyArea
+  o String bodyPart
+  o String name
+  o String illnessCategory
+  o DateTime transTime
+  o DateTime updateTime
+  
+}
+
+transaction LabTest {
+  o SharedLabTest sharedLabTest
+  --> TreatmentLabTest treatmentLabTest
+  --> Lab lab
+}
+
+transaction ReferHospital {
+  o SharedHospital sharedHospital
+}
+
+transaction RequestConsultation {
+  --> Patient patient
+
+}
+
+transaction StartConsultation {
+  o Consultation consultation
+  --> Patient patient
+  --> Doctor doctor
+}
+
+concept ConsultationDetails{
+  o String illnessDescription
+  o String message
+}
+
+transaction EndConsultation {
+  o ConsultationDetails consultationDetails
+  o Treatment treatment
+  o TreatmentDrugs treatmentDrugs optional
+  o TreatmentLabTest treatmentLabTest optional 
+  o HospitalTreatment hospitalTreatment optional
+  --> Consultation consultation
+  --> Patient patient
+  --> Doctor doctor
+
+}
+
+transaction ShareDrugswithPharmacy {
+  o SharedDrugs sharedDrugs
+  --> TreatmentDrugs treatmentDrugs
+  --> Pharmacy pharmacy
+}
+
+
+transaction addDoctor {
+  o Doctor doctor
+}
+
+transaction addPatient{
+  o Patient patient
+}
+
+transaction addPatientRelative{
+  o PatientRelative patientRelative
+  --> Patient patient
+}
+
+event ConsultationUpdated {
+  --> Consultation consultation
+}
+
+event TreatmentUpdated {
+  --> Treatment treatment
+}
+
+event newSharedDrug{
+  --> SharedDrugs sharedDrugs
+}
