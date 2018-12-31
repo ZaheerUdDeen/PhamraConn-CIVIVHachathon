@@ -47,7 +47,6 @@ participant Patient identified by patientid {
 participant Doctor identified by doctorId {
   o String doctorId
   o String firstName
-  o Boolean emergencyStaff
   o String lastName
 }
 participant EmergencyDoctor identified by emergencyDataid{
@@ -55,11 +54,15 @@ participant EmergencyDoctor identified by emergencyDataid{
  o String licenceNumber
  
 }
+@commit(false)
+@returns(LabTest[])
 transaction patientLabTest {
-  --> Patient patient
 }
+
+@commit(false)
+@returns(TreatmentDrugs[])
 transaction patientTreatmentDrugs {
-  --> Patient patient
 }
+
 
 

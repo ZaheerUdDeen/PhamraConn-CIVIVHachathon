@@ -47,10 +47,10 @@ rule OwnerHasFullAccessToTheirAssets {
 }
 rule emergenCyStaffHassAccessToPatientLabTest {
     description: "Allow all participants full access to their assets"
-    participant(p): "org.example.basic.EmergencyDoctor"
+    participant(g): "org.example.basic.EmergencyDoctor"
     operation: READ
     resource(r): "org.example.basic.LabTest"
-    condition: (p.emergencyAcces===true)
+    condition: (r.emergencyAcces===true)
     action: ALLOW
 }
 
