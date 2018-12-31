@@ -1,0 +1,16 @@
+/*
+Query file for pharmacon model
+*/
+
+query patientLabTest {
+  description: "Select all patient LabTest"
+  statement:
+      SELECT org.example.basic.LabTest
+          WHERE (owner == _$patient)
+}
+query patientTreatmentDrugs {
+  description: "Select all patient TreatmentDrugs"
+  statement:
+      SELECT org.example.basic.LabTest
+          WHERE (owner == _$patient)
+}
