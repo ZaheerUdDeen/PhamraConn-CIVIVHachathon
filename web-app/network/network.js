@@ -14,7 +14,7 @@ let adminConnection;
 //this is the business network connection the tests will use.
 let businessNetworkConnection;
 
-let businessNetworkName = 'infiniun-network';
+let businessNetworkName = 'emergency-network';
 let factory;
 
 
@@ -27,7 +27,7 @@ async function importCardForIdentity(cardName, identity) {
 
   //use admin connection
   adminConnection = new AdminConnection();
-  businessNetworkName = 'infiniun-network';
+  businessNetworkName = 'emergency-network';
 
   //declare metadata
   const metadata = {
@@ -110,38 +110,37 @@ module.exports = {
   * @param {String} firstName Member first name
   * @param {String} lastName Member last name
   */
- registerMember: async function (cardId,firstName, lastName, password) {
+ registerMember: async function (cardId,firstName, lastName, doctorId) {
     try {
 
       console.log("Hi-"+cardId);
       //connect as admin
       businessNetworkConnection = new BusinessNetworkConnection();
-      await businessNetworkConnection.connect('admin@pharmacon-network');
+      await businessNetworkConnection.connect('admin@emergency-network');
 
       //get the factory for the business network
       factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
       //create member participant
-      const member = factory.newResource(namespace, 'Manufacturer', cardId);
-      member.firstName = firstName;
-      member.lastName = lastName;
-      member.username = cardId;
-      member.password=password;
+      const doctor = factory.newResource(namespace, 'Doctor', cardId);
+      doctor.firstName = firstName;
+      doctor.lastName = lastName;
+      doctor.doctorId=doctorId;
 
       //add member participant
-      const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Manufacturer');
-      await participantRegistry.add(member);
+      const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Doctor');
+      await participantRegistry.add(doctor);
 
       console.log("here1");
       //issue identity
-      const identity = await businessNetworkConnection.issueIdentity(namespace + '.Manufacturer#' + cardId, cardId);
+      const identity = await businessNetworkConnection.issueIdentity(namespace + '.Doctor#' + cardId, cardId);
       console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
       //import card for identity
       await importCardForIdentity(cardId, identity);
       console.log(cardStore);
       //disconnect
-      await businessNetworkConnection.disconnect('admin@infiniun-network');
+      await businessNetworkConnection.disconnect('admin@emergency-network');
 
       return true;
     }

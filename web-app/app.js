@@ -13,8 +13,7 @@ const router = express.Router();
 
 //get the libraries to call
 var network = require('./network/network.js');
-var validate = require('./network/validate.js');
-var analysis = require('./network/analysis.js');
+
 
 //bootstrap application settings
 app.use(cors());
@@ -54,19 +53,19 @@ app.get('/about', function(req, res) {
 
 
 //post call to register member on the network
-app.post('/api/registerMember', function(req, res) {
+app.post('/api/registerDoctor', function(req, res) {
 
   //declare variables to retrieve from request
   var firstName="res.body.firstName";
   var lastName="res.body.lastName";
-  var cardId="114411";
-  var password="res.body.password";
+  var cardId="res.body.doctorId";
+  var doctorId="res.body.doctorId";
   
   //print variables
-  console.log('Using param - firstname: ' + firstName + ' lastname: ' + lastName + ' cardId: ' + cardId + ' password: ' + password );
+  console.log('Using param - firstname: ' + firstName + ' lastname: ' + lastName + ' cardId: ' + cardId + ' doctorId: ' + doctorId );
 
         //else register member on the network
-        network.registerMember(cardId, password, firstName, lastName)
+        network.registerMember(cardId, firstName, lastName, doctorId)
           .then((response) => {
             //return error if error in response
             if (response.error != null) {
