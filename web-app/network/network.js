@@ -104,13 +104,13 @@ module.exports = {
 
 
   /*
-  * Create Member participant and import card for identity
+  * Create Doctor participant and import card for identity
   * @param {String} cardId Import card id for member
   * @param {String} password Member account number as identifier on network
   * @param {String} firstName Member first name
   * @param {String} lastName Member last name
   */
- registerMember: async function (cardId,firstName, lastName, doctorId) {
+ registerDoctor: async function (cardId,firstName, lastName, doctorId) {
     try {
 
       console.log("Hi-"+cardId);
@@ -153,354 +153,120 @@ module.exports = {
     }
 
   },
-/*
-  * Create Pharmacy participant and import card for identity
-  * @param {String} cardId Import card id for partner
-  * @param {String} pharmacyId as identifier on network
-  * @param {String} name Pharmacy name
-  * @param {String} contact
-  *  @param {String} pharmacyMedDB
-  */
- registerPharmacy: async function (cardId, pharmacyId, name, contact,pharmacyMedDB) {
-
-  try {
-
-    //connect as admin
-    businessNetworkConnection = new BusinessNetworkConnection();
-    await businessNetworkConnection.connect('admin@infiniun-network');
-
-    //get the factory for the business network.
-    factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-    console.log("hi here");
-    //create partner participant
-    const pharmacy = factory.newResource(namespace, 'Pharmacy', pharmacy);
-    pharmacy.pharmacyName = name;
-    pharmacy.pharmacyMedDB = pharmacyMedDB;
-    pharmacy.contact = contact;
-
-    //add partner participant
-    const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Pharmacy');
-    await participantRegistry.add(pharmacy);
-
-    console.log("hi added");
-    console.log(cardStore);
-
-    //issue identity
-    const identity = await businessNetworkConnection.issueIdentity(namespace + '.Pharmacy#' +pharmacyId, cardId);
-
-    //import card for identity
-    await importCardForIdentity(cardId, identity);
-
-    //disconnect
-    await businessNetworkConnection.disconnect('admin@infiniun-network');
-
-    return true;
-  }
-  catch(err) {
-    //print and return error
-    console.log(err);
-    var error = {};
-    error.error = err.message;
-    return error;
-  }
-
-},
-
-
-
-
 
   /*
-  * Create Partner participant and import card for identity
-  * @param {String} cardId Import card id for partner
-  * @param {String} partnerId Partner Id as identifier on network
-  * @param {String} name Partner name
-  * @param {String} contact
+  * Create Patient participant and import card for identity
+  * @param {String} cardId Import card id for member
+  * @param {String} patientid Member account number as identifier on network
+  * @param {String} firstName Member first name
+  * @param {String} lastName Member last name
   */
-  registerPartner: async function (cardId, partnerId, name, contact) {
-
+ registerPatient: async function (cardId,firstName, lastName, patientid) {
     try {
 
+      console.log("Hi-"+cardId);
       //connect as admin
       businessNetworkConnection = new BusinessNetworkConnection();
-      await businessNetworkConnection.connect('admin@infiniun-network');
+      await businessNetworkConnection.connect('admin@emergency-network');
 
-      //get the factory for the business network.
+      //get the factory for the business network
       factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-      console.log("hi here");
-      //create partner participant
-      const partner = factory.newResource(namespace, 'Patient', partnerId);
-      partner.name = name;
-      partner.contact = contact;
-      //add partner participant
+
+      //create member participant
+      const patient = factory.newResource(namespace, 'Patient', cardId);
+      patient.firstName = firstName;
+      patient.lastName = lastName;
+      patient.patientid=patientid;
+
+      //add member participant
       const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
-      await participantRegistry.add(partner);
+      await participantRegistry.add(patient);
 
-      console.log("hi added");
-      console.log(cardStore);
-
+      console.log("here1");
       //issue identity
-      const identity = await businessNetworkConnection.issueIdentity(namespace + '.Patient#' + partnerId, cardId);
+      const identity = await businessNetworkConnection.issueIdentity(namespace + '.Patient#' + cardId, cardId);
+      console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
       //import card for identity
       await importCardForIdentity(cardId, identity);
-
+      console.log(cardStore);
       //disconnect
-      await businessNetworkConnection.disconnect('admin@infiniun-network');
+      await businessNetworkConnection.disconnect('admin@emergency-network');
 
       return true;
     }
     catch(err) {
       //print and return error
-      console.log(err);
+      console.log("here111 "+err);
       var error = {};
       error.error = err.message;
       return error;
     }
 
   },
-/*
-  * Create Partner participant and import card for identity
-  * @param {String} cardId Import card id for partner
-  * @param {String} labId Partner Id as identifier on network
-  * @param {String} contact
-  */
- registerLabs: async function (cardId, labId, contact) {
 
+
+
+  /*
+  * Create Member participant and import card for identity
+  * @param {String} cardId Import card id for member
+  * @param {String} emergencyDataid Member account number as identifier on network
+  * @param {String} licenceNumber Member first name
+  */
+ registerEmergencyDoctor: async function (cardId,emergencyDataid, licenceNumber) {
   try {
 
+    console.log("Hi-"+cardId);
     //connect as admin
     businessNetworkConnection = new BusinessNetworkConnection();
-    await businessNetworkConnection.connect('admin@infiniun-network');
+    await businessNetworkConnection.connect('admin@emergency-network');
 
-    //get the factory for the business network.
+    //get the factory for the business network
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
 
-    //create lab participant
-    const lab = factory.newResource(namespace, 'Lab', labId);
-    lab.contact = contact;
-    //add partner participant
-    const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Lab');
-    await participantRegistry.add(lab);
+    //create member participant
+    const emergencyDoctor = factory.newResource(namespace, 'EmergencyDoctor', cardId);
+    emergencyDoctor.emergencyDataid = emergencyDataid;
+    emergencyDoctor.licenceNumber = licenceNumber;
 
+    //add member participant
+    const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.EmergencyDoctor');
+    await participantRegistry.add(emergencyDoctor);
+
+    console.log("here1");
     //issue identity
-    const identity = await businessNetworkConnection.issueIdentity(namespace + '.Lab#' + labId, cardId);
+    const identity = await businessNetworkConnection.issueIdentity(namespace + '.EmergencyDoctor#' + cardId, cardId);
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
     //import card for identity
     await importCardForIdentity(cardId, identity);
-
+    console.log(cardStore);
     //disconnect
-    await businessNetworkConnection.disconnect('admin@infiniun-network');
+    await businessNetworkConnection.disconnect('admin@emergency-network');
 
     return true;
   }
   catch(err) {
     //print and return error
-    console.log(err);
+    console.log("here111 "+err);
     var error = {};
     error.error = err.message;
     return error;
   }
 
 },
-  /*
-  * Perform EarnPoints transaction
-  * @param {String} cardId Card id to connect to network
-  * @param {String} patientID Patient Id of partner
-  * @param {String} doctorID Points value
-  * @param {String} consultationID consultationid
-  * @param {String} illnessDescription illnessDescription
-  * @param {String} message messageTo doctor
-  * @param {String} consultationCompleted consultation Status
-
-  */
-  beginConsultation: async function (cardId, consultationID, patientID, doctorID,illnessDescription,consultationCompleted,message) {
-
-    try {
-      console.log('Using param - cardId: ' + cardId + ' patientID: ' + patientID + ' doctorID: ' + doctorID +' ConsultationID: ' + consultationID+' illnessDescription: ' + illnessDescription );
-
-      //connect to network with cardId
-      businessNetworkConnection = new BusinessNetworkConnection();
-      await businessNetworkConnection.connect('admin@infiniun-network');
-
-      //get the factory for the business network.
-      factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-
-      //create transaction
-      const startConsultation = factory.newTransaction(namespace, 'StartConsultation');
-     //startConsultation.consultation = consultation;
-      startConsultation.doctor = factory.newRelationship(namespace, 'Manufacturer', doctorID);
-      startConsultation.patient = factory.newRelationship(namespace, 'Patient', patientID);
-
-      
-      
-      startConsultation.consultation = factory.newResource(namespace, 'Consultation',consultationID);
-      startConsultation.consultation.illnessDescription=illnessDescription;
-      startConsultation.consultation.message='message';
-      startConsultation.consultation.consultationCompleted=false;
-
-      startConsultation.consultation.patient=factory.newRelationship(namespace, 'Patient', patientID);
-      startConsultation.consultation.doctor=factory.newRelationship(namespace, 'Manufacturer', doctorID);
-      // console.log("model="+JSON.stringify(startConsultation));
-      // console.log("parameter="+JSON.stringify(consultation));
   
-      //submit transaction
-      await businessNetworkConnection.submitTransaction(startConsultation);
-      //disconnect
-      await businessNetworkConnection.disconnect(cardId);
 
-      return true;
-    }
-    catch(err) {
-      //print and return error
-      console.log(err);
-      var error = {};
-      error.error = err.message;
-      return error;
-    }
-
-  },
-
-  /*
-  * Perform UsePoints transaction
-  * @param {String} cardId Card id to connect to network
-  * @param {String} accountNumber Account number of member
-  * @param {String} partnerId Patient Id of partner
-  * @param {Integer} points Points value
-  */
-  usePointsTransaction: async function (cardId, accountNumber, partnerId, points) {
-
-    try {
-
-      //connect to network with cardId
-      businessNetworkConnection = new BusinessNetworkConnection();
-      await businessNetworkConnection.connect(cardId);
-
-      //get the factory for the business network.
-      factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-
-      //create transaction
-      const usePoints = factory.newTransaction(namespace, 'UsePoints');
-      usePoints.points = points;
-      usePoints.member = factory.newRelationship(namespace, 'Manufacturer', accountNumber);
-      usePoints.partner = factory.newRelationship(namespace, 'Patient', partnerId);
-
-      //submit transaction
-      await businessNetworkConnection.submitTransaction(usePoints);
-
-      //disconnect
-      await businessNetworkConnection.disconnect(cardId);
-
-      return true;
-    }
-    catch(err) {
-      //print and return error
-      console.log(err);
-      var error = {};
-      error.error = err.message;
-      return error
-    }
-
-  },
-
-  /*
-  * Get Member data
-  * @param {String} cardId Card id to connect to network
-  * @param {String} accountNumber Account number of member
-  */
-  memberData: async function (cardId, doctorID) {
-
-    try {
-      console.log("############################################");
-
-      //connect to network with cardId
-      businessNetworkConnection = new BusinessNetworkConnection();
-      await businessNetworkConnection.connect(cardId);
-
-      //get member from the network
-      const memberRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Manufacturer');
-      const member = await memberRegistry.get(doctorID);
-      console.log("HERE");
-
-
-      //disconnect
-      await businessNetworkConnection.disconnect(cardId);
-
-      //return member object
-      console.log(cardStore);
-      return member;
-    }
-    catch(err) {
-      //print and return error
-      console.log(err);
-      var error = {};
-      error.error = err.message;
-      return error;
-    }
-
-  },
+  
 
 
 
   /*
-  * Get Consultation data for Patient
+  * Get Patient data
   * @param {String} cardId Card id to connect to network
-  * @param {String} patientID Account number of member
+  * @param {String} patientId patient to which emergency access will be granted
   */
- getPatientConsultationData: async function (patientID,cardId) {
-
-  try {
-    console.log("############################################");
-
-    //connect to network with cardId
-    businessNetworkConnection = new BusinessNetworkConnection();
-    await businessNetworkConnection.connect('admin@infiniun-network');
-    factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-    var treatmentInf={};
-
-    const consultationData = await businessNetworkConnection.query('selectConsultationPatient',{ patientID: 'resource:org.acme.Patient#'+patientID });
-    console.log("con-ID :"+JSON.parse(JSON.stringify(consultationData))[0].consultationID);
-    var consultationID=JSON.parse(JSON.stringify(consultationData))[0].consultationID;
-    treatmentInf.consultationID=JSON.parse(JSON.stringify(consultationData))[0].consultationID;
-    treatmentInf.illnessDescription=JSON.parse(JSON.stringify(consultationData))[0].illnessDescription;
-    treatmentInf.message=JSON.parse(JSON.stringify(consultationData))[0].message;
-    treatmentInf.consultationCompleted=JSON.parse(JSON.stringify(consultationData))[0].consultationCompleted;
-
-    const treatmentData = await businessNetworkConnection.query('selectTreatmentPatient',{ consultationID: 'resource:org.acme.Consultation#'+consultationID });
-    console.log("treat-ID :"+JSON.parse(JSON.stringify(treatmentData))[0].treatmentID);
-    var treatmentID=JSON.parse(JSON.stringify(treatmentData))[0].treatmentID;
-    treatmentInf.procedure=JSON.parse(JSON.stringify(treatmentData))[0].procedure;
-
-
-    const treatmentDrugs = await businessNetworkConnection.query('selectTreatmentDrugs',{ ctreatmentID: 'resource:org.acme.Treatment#'+treatmentID });
-    treatmentInf.medicine=JSON.parse(JSON.stringify(treatmentDrugs))[0].medicine;
-
-    
-    //disconnect
-    await businessNetworkConnection.disconnect('admin@infiniun-network');
-    //return member object
-    //console.log("treatInfo-Consultaion"+JSON.stringify(treatmentInf));
-
-
-    return treatmentInf;
-  }
-  catch(err) {
-    //print and return error
-    console.log(err);
-    var error = {};
-    error.error = err.message;
-    return error;
-  }
-
-},
-
-
-  /*
-  * Get Consultation data
-  * @param {String} cardId Card id to connect to network
-  * @param {String} doctorID Account number of member
-  */
- getConsultationData: async function (doctorID,cardId) {
+ getPatientData: async function (patientId,cardId) {
 
   try {
     console.log("############################################");
@@ -509,15 +275,19 @@ module.exports = {
     businessNetworkConnection = new BusinessNetworkConnection();
     await businessNetworkConnection.connect(cardId);
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+    const allAssets = [];
+    const patientLabData = await businessNetworkConnection.query('patientLabTest',{ patient: 'resource:org.example.basic.Patient#'+patientId });
+    allAssets.push(patientLabData);
 
-    //startConsultation.doctor = factory.newRelationship(namespace, 'Manufacturer', doctorID);
 
-    const consultationData = await businessNetworkConnection.query('selectConsultation',{ doctorID: 'resource:org.acme.Manufacturer#'+doctorID });
+    const patientDrugsData = await businessNetworkConnection.query('patientLabTest',{ patient: 'resource:org.example.basic.Patient#'+patientId });
+    allAssets.push(patientDrugsData);
+
 
     //disconnect
     await businessNetworkConnection.disconnect(cardId);
     //return member object
-    return JSON.stringify(consultationData);
+    return JSON.stringify(allAssets);
   }
   catch(err) {
     //print and return error

@@ -24,6 +24,7 @@ asset LabTest identified by labtestId{
   o String type
   o String describption
   o String result
+  o Integer emergencyAccesTimeConstraints
   o Boolean emergencyAcces
    --> Patient owner
   --> Doctor doctor
@@ -35,6 +36,7 @@ asset TreatmentDrugs identified by treatmentDrugs{
   o String formulae
   o String describption
   o String result
+  o Integer emergencyAccesTimeConstraints
   o Boolean emergencyAcces
   --> Patient owner
   --> Doctor doctor
@@ -64,5 +66,8 @@ transaction patientLabTest {
 transaction patientTreatmentDrugs {
 }
 
-
+concept emergencyAccesTimeConstraints {
+  o DateTime emergencyAccesTimeConstraints
+  --> EmergencyDoctor emergencyDoctor
+}
 
