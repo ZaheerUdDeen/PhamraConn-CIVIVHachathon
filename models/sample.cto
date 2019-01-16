@@ -24,7 +24,6 @@ asset LabTest identified by labtestId{
   o String type
   o String describption
   o String result
-  o Integer emergencyAccesTimeConstraints
   o Boolean emergencyAcces
    --> Patient owner
   --> Doctor doctor
@@ -36,7 +35,6 @@ asset TreatmentDrugs identified by treatmentDrugs{
   o String formulae
   o String describption
   o String result
-  o Integer emergencyAccesTimeConstraints
   o Boolean emergencyAcces
   --> Patient owner
   --> Doctor doctor
@@ -45,14 +43,16 @@ participant Patient identified by patientid {
   o String patientid
   o String firstName
   o String lastName
+  o Integer emergencyAccesTimeConstraints
+
 }
 participant Doctor identified by doctorId {
   o String doctorId
   o String firstName
   o String lastName
 }
-participant EmergencyDoctor identified by emergencyDataid{
- o String emergencyDataid
+participant EmergencyDoctor identified by emergencyDoctorid{
+ o String emergencyDoctorid
  o String licenceNumber
  
 }
@@ -66,10 +66,10 @@ transaction patientLabTest {
 transaction patientTreatmentDrugs {
 }
 
-asset emergencyAccesTimeConstraints identified by et{
+asset EmergencyAccesTimeConstraints identified by et{
   o String et
   o DateTime emergencyAccesStartTime
-  o DateTime emergencyAccesTimeEndTime
+  o DateTime emergencyAccesEndTime
   --> EmergencyDoctor emergencyDoctor
 }
 
