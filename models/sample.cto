@@ -68,8 +68,9 @@ transaction patientTreatmentDrugs {
 
 asset EmergencyAccesTimeConstraints identified by et{
   o String et
-  o DateTime emergencyAccesStartTime
-  o DateTime emergencyAccesEndTime
+  o String emergencyAccesStartTime
+  o String emergencyAccesEndTime
+  --> Patient patient
   --> EmergencyDoctor emergencyDoctor
 }
 

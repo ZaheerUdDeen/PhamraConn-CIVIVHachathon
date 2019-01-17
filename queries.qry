@@ -14,3 +14,10 @@ query patientTreatmentDrugs {
       SELECT org.example.basic.TreatmentDrugs
           WHERE (owner == _$patient)
 }
+
+query hasAccesed {
+  description: "check whether the ed previusly access patient data"
+  statement:
+      SELECT org.example.basic.EmergencyAccesTimeConstraints
+          WHERE (patient == _$patient AND emergencyDoctor == _$emergencyDoctor)
+}
