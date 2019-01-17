@@ -278,26 +278,49 @@ module.exports = {
     businessNetworkConnection = new BusinessNetworkConnection();
     await businessNetworkConnection.connect('admin@emergency-network');
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-    //get patient from the network
-    const patientRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
-    const patient = await patientRegistry.get(patientId);
-
-    var st=""+moment().format('MMMM Do YYYY, h:mm:ss a')
-    console.log(st);
-
-    const tc= factory.newResource(namespace, 'EmergencyAccesTimeConstraints',patientId+cardId);
-    tc.emergencyAccesStartTime=st
+    const assetRegistryET = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
+    const accesed = await assetRegistryET.get(patientId+cardId);
+    //const accesed = await businessNetworkConnection.query('hasAccesed',{ patient: 'resource:org.example.basic.Patient#'+patientId,emergencyDoctor:'resource:org.example.basic.EmergencyDoctor#'+cardId });
     
-    var et=moment().add(patient.emergencyAccesTimeConstraints, 'hours');
-    tc.emergencyAccesEndTime=""+et.format('MMMM Do YYYY, h:mm:ss a')
-    tc.emergencyDoctor=factory.newRelationship(namespace, 'EmergencyDoctor', cardId)
-    tc.patient=factory.newRelationship(namespace, 'Patient', patientId)
-//add patiant participant
-const assetRegistry = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
-await assetRegistry.add(tc);
+
+    if(accesed ){
+      console.log("Yess");
+
+      await businessNetworkConnection.disconnect('admin@emergency-network');
+
+      endTime=moment(accesed.emergencyAccesEndTime,'MMMM Do YYYY, h:mm:ss a')
+      console.log("now :"+moment(moment(),'MMMM Do YYYY, h:mm:ss a'), "endTime :"+endTime);      
+      
+      if(moment(moment(),'MMMM Do YYYY, h:mm:ss a').isAfter(endTime)){
+        
+        return JSON.stringify('Acces Denied');
+
+      }
 
 
-    await businessNetworkConnection.disconnect('admin@emergency-network');
+    }else{
+        //get patient from the network
+        const patientRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
+        const patient = await patientRegistry.get(patientId);
+
+        var st=""+moment().format('MMMM Do YYYY, h:mm:ss a')
+        console.log(st);
+
+        const tc= factory.newResource(namespace, 'EmergencyAccesTimeConstraints',patientId+cardId);
+        tc.emergencyAccesStartTime=st
+
+        var et=moment().add(patient.emergencyAccesTimeConstraints, 'hours');
+        tc.emergencyAccesEndTime=""+et.format('MMMM Do YYYY, h:mm:ss a')
+        tc.emergencyDoctor=factory.newRelationship(namespace, 'EmergencyDoctor', cardId)
+        tc.patient=factory.newRelationship(namespace, 'Patient', patientId)
+        //add as Aset 
+        const assetRegistry = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
+        await assetRegistry.add(tc);
+
+
+        await businessNetworkConnection.disconnect('admin@emergency-network');
+    }
+    
     
     
     
