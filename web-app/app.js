@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const path = require('path');
 var cors = require('cors');
-
 //create express web-app
 const app = express();
 const router = express.Router();
@@ -87,22 +86,31 @@ app.post('/api/registerEmergencyDoctor', function(req, res) {
   var emergencyDataid=req.body.emergencyDataid;
   var licenceNumber=req.body.licenceNumber;
   var cardId=req.body.emergencyDataid;
-  
+  var authorizedDoctors=["A1B2aa444","B1B2aa444","C1B2aa444","D1B2aa444","E1B2aa444","F1B2aa444","G1B2aa444","H1B2aa444","I1B2aa444","J1B2aa444","J1B2aa444"]
+      if(authorizedDoctors.indexOf(licenceNumber)>-1)
+      {
+        console.log("authorized Doctor-"+licenceNumber);
         //else register member on the network
         network.registerEmergencyDoctor(cardId, emergencyDataid, licenceNumber)
-          .then((response) => {
-            //return error if error in response
-            if (response.error != null) {
-              res.json({
-                error: response.error
-              });
-            } else {
-              //else return success
-              res.json({
-                success: response
-              });
-            }
-          });
+        .then((response) => {
+          //return error if error in response
+          if (response.error != null) {
+            res.json({
+              error: response.error
+            });
+          } else {
+            //else return success
+            res.json({
+              success: response
+            });
+          }
+        });
+      }else{
+        res.json({
+          error: 'Unauthorized Person'
+        });
+      }
+        
 });
 //post call to register member on the network
 app.post('/api/registerPatient', function(req, res) {

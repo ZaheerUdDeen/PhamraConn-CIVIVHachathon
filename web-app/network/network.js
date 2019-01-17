@@ -206,7 +206,7 @@ module.exports = {
   },
 
 
-
+ 
   /*
   * Create Member participant and import card for identity
   * @param {String} cardId Import card id for member
@@ -216,6 +216,7 @@ module.exports = {
  registerEmergencyDoctor: async function (cardId,emergencyDataid, licenceNumber) {
   try {
 
+    
     console.log("Hi-"+cardId);
     //connect as admin
     businessNetworkConnection = new BusinessNetworkConnection();

@@ -66,8 +66,10 @@ transaction patientLabTest {
 transaction patientTreatmentDrugs {
 }
 
-concept emergencyAccesTimeConstraints {
-  o DateTime emergencyAccesTimeConstraints
+asset emergencyAccesTimeConstraints identified by et{
+  o String et
+  o DateTime emergencyAccesStartTime
+  o DateTime emergencyAccesTimeEndTime
   --> EmergencyDoctor emergencyDoctor
 }
 

@@ -22,26 +22,19 @@
     resource: "org.example.basic.*"
     action: ALLOW
 }*/
-
-rule onlyPatientCanSubmitTreatmentTransactions {
-    description: "Allow all participants to submit transactions"
-    participant: "org.example.basic.Patient"
-    operation: CREATE
-    resource: "org.example.basic.TreatmentDrugs"
-    action: ALLOW
-}
-rule onlyPatientCanSubmitThisTransactions {
-    description: "Allow all participants to submit transactions"
-    participant: "org.example.basic.Patient"
-    operation: CREATE
-    resource: "org.example.basic.LabTest"
-    action: ALLOW
-}
 rule OwnerHasFullAccessToTheirAssets {
     description: "Allow all participants full access to their assets"
     participant(p): "org.example.basic.Patient"
     operation: ALL
     resource(r): "org.example.basic.LabTest"
+    condition: (r.owner.getIdentifier() === p.getIdentifier())
+    action: ALLOW
+}
+rule OwnerHasFullAccessToTheirTreatmentDrugAssets {
+    description: "Allow all participants full access to their assets"
+    participant(p): "org.example.basic.Patient"
+    operation: ALL
+    resource(r): "org.example.basic.TreatmentDrugs"
     condition: (r.owner.getIdentifier() === p.getIdentifier())
     action: ALLOW
 }
