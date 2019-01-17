@@ -240,17 +240,19 @@ module.exports = {
     businessNetworkConnection = new BusinessNetworkConnection();
     await businessNetworkConnection.connect('admin@emergency-network');
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-    const assetRegistryET = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
-    const accesed = await assetRegistryET.get(patientId+cardId);
-    //const accesed = await businessNetworkConnection.query('hasAccesed',{ patient: 'resource:org.example.basic.Patient#'+patientId,emergencyDoctor:'resource:org.example.basic.EmergencyDoctor#'+cardId });
-    
+    //const assetRegistryET = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
+    //const accesed = await assetRegistryET.get(patientId+cardId);
+    const etq = await businessNetworkConnection.query('hasAccesed',{ et: patientId+cardId });
+    console.log("accessd :"+etq);
 
-    if(accesed ){
+
+    if(etq.length>0 ){
       console.log("Yess");
-
+      const assetRegistryET = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
+      const etc = await assetRegistryET.get(patientId+cardId);
       await businessNetworkConnection.disconnect('admin@emergency-network');
 
-      endTime=moment(accesed.emergencyAccesEndTime,'MMMM Do YYYY, h:mm:ss a')
+      endTime=moment(etc.emergencyAccesEndTime,'MMMM Do YYYY, h:mm:ss a')
       console.log("now :"+moment(moment(),'MMMM Do YYYY, h:mm:ss a'), "endTime :"+endTime);      
       
       if(moment(moment(),'MMMM Do YYYY, h:mm:ss a').isAfter(endTime)){
