@@ -65,44 +65,6 @@ async function useIdentity(cardName) {
 
 //export module
 module.exports = {
-/*
-  * Create Member participant and import card for identity
-  * @param {String} cardId Import card id for member
-  */
- getManufacturers: async function (cardId) {
-  try {
-
-    console.log("Hi-"+cardId);
-    //connect as admin
-    businessNetworkConnection = new BusinessNetworkConnection();
-    await businessNetworkConnection.connect('admin@infiniun-network');
-
-    //get the factory for the business network
-    factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-
-    
-    //add member participant
-    const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Manufacturer');
-    await participantRegistry.getAll();
-
-    console.log("here1");
-    
-    //disconnect
-    await businessNetworkConnection.disconnect('admin@infiniun-network');
-
-    return true;
-  }
-  catch(err) {
-    //print and return error
-    console.log("here111 "+err);
-    var error = {};
-    error.error = err.message;
-    return error;
-  }
-
-},
-
-
 
 
   /*
