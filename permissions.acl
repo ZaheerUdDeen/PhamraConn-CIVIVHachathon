@@ -23,14 +23,14 @@
     action: ALLOW
 }*/
 
-rule EverybodyCanSubmitTransactions {
+rule onlyPatientCanSubmitTreatmentTransactions {
     description: "Allow all participants to submit transactions"
     participant: "org.example.basic.Patient"
     operation: CREATE
-    resource: "org.example.basic.patientTreatmentDrugs"
+    resource: "org.example.basic.TreatmentDrugs"
     action: ALLOW
 }
-rule onlyPatientCanThisSubmitTransactions {
+rule onlyPatientCanSubmitThisTransactions {
     description: "Allow all participants to submit transactions"
     participant: "org.example.basic.Patient"
     operation: CREATE
@@ -54,6 +54,22 @@ rule emergenCyStaffHassAccessToPatientLabTest {
     action: ALLOW
 }
 
+rule emergenCyStaffHassAccessToPatientTreatmentDrugs {
+    description: "Allow all participants full access to their assets"
+    participant(g): "org.example.basic.EmergencyDoctor"
+    operation: READ
+    resource(r): "org.example.basic.TreatmentDrugs"
+    condition: (r.emergencyAcces===true)
+    action: ALLOW
+}
+rule familyDoctorHassAccessToPatientLabTest {
+    description: "Allow all participants full access to their assets"
+    participant(g): "org.example.basic.Doctor"
+    operation: READ
+    resource(r): "org.example.basic.LabTest"
+    condition: (r.doctor.getIdentifier()===g.getIdentifier())
+    action: ALLOW
+}
 rule SystemACL {
     description: "System ACL to permit all access"
     participant: "org.hyperledger.composer.system.Participant"

@@ -56,16 +56,16 @@ app.get('/about', function(req, res) {
 app.post('/api/registerDoctor', function(req, res) {
 
   //declare variables to retrieve from request
-  var firstName="res.body.firstName";
-  var lastName="res.body.lastName";
-  var cardId="res.body.doctorId";
-  var doctorId="res.body.doctorId";
+  var firstName=req.body.firstName;
+  var lastName=req.body.lastName;
+  var cardId=req.body.doctorId;
+  var doctorId=req.body.doctorId;
   
   //print variables
   console.log('Using param - firstname: ' + firstName + ' lastname: ' + lastName + ' cardId: ' + cardId + ' doctorId: ' + doctorId );
 
         //else register member on the network
-        network.registerMember(cardId, firstName, lastName, doctorId)
+        network.registerDoctor(cardId, firstName, lastName, doctorId)
           .then((response) => {
             //return error if error in response
             if (response.error != null) {
@@ -80,7 +80,58 @@ app.post('/api/registerDoctor', function(req, res) {
             }
           });
 });
+//post call to register member on the network
+app.post('/api/registerEmergencyDoctor', function(req, res) {
 
+  //declare variables to retrieve from request
+  var emergencyDataid=req.body.emergencyDataid;
+  var licenceNumber=req.body.licenceNumber;
+  var cardId=req.body.emergencyDataid;
+  
+        //else register member on the network
+        network.registerEmergencyDoctor(cardId, emergencyDataid, licenceNumber)
+          .then((response) => {
+            //return error if error in response
+            if (response.error != null) {
+              res.json({
+                error: response.error
+              });
+            } else {
+              //else return success
+              res.json({
+                success: response
+              });
+            }
+          });
+});
+//post call to register member on the network
+app.post('/api/registerPatient', function(req, res) {
+
+  //declare variables to retrieve from request
+  var firstName=req.body.firstName;
+  var lastName=req.body.lastName;
+  var cardId=req.body.patientid;
+  var patientid=req.body.patientid;
+  
+  //print variables
+  console.log('Using param - firstname: ' + firstName + ' lastname: ' + lastName + ' cardId: ' + cardId + ' patientid: ' + patientid );
+
+        //else register member on the network
+        network.registerPatient(cardId, firstName, lastName, patientid)
+          .then((response) => {
+            //return error if error in response
+            if (response.error != null) {
+              res.json({
+                error: response.error
+              });
+            } else {
+              //else return success
+              res.json({
+                success: response
+              });
+            }
+          });
+});
 //post call to register partner on the network
 app.post('/api/registerPatient', function(req, res) {
 
@@ -406,15 +457,15 @@ app.post('/api/getSharedDrugs', function(req, res) {
 
 
 //post call to retrieve doctor Consultation
-app.post('/api/myConsultation', function(req, res) {
+app.post('/api/getPatientData', function(req, res) {
 
 
-  var doctorID = req.body.doctorID;
-  var cardId = req.body.cardid;
-  console.log('memberData using param - ' + ' doctorID: ' + doctorID + ' cardId: ' + cardId);
+  var patientid = req.body.patientid;
+  var cardId = req.body.emergencyDoctorAccessCard;
+  console.log('memberData using param - ' + ' PatientId: ' + patientid + ' cardId: ' + cardId);
   var returnData = {};
       //get UsePoints transactions from the network
-      network.getConsultationData(doctorID,cardId)
+      network.getPatientData(patientid,cardId)
         .then((resultConsultationData) => {
           //return error if error in response
           if (resultConsultationData.error != null) {
@@ -424,7 +475,7 @@ app.post('/api/myConsultation', function(req, res) {
           } else {
             //else add transaction data to return object
             returnData.doctoConsultations = resultConsultationData;
-            console.log("resultConsultationData :"+resultConsultationData);
+            console.log("resultPatientData :"+resultConsultationData);
             console.log("returnData :"+JSON.parse(JSON.stringify(returnData.doctoConsultations)));
 
             res.json(JSON.parse(returnData.doctoConsultations));

@@ -11,6 +11,6 @@ query patientLabTest {
 query patientTreatmentDrugs {
   description: "Select all patient TreatmentDrugs"
   statement:
-      SELECT org.example.basic.LabTest
+      SELECT org.example.basic.TreatmentDrugs
           WHERE (owner == _$patient)
 }
