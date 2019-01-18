@@ -83,15 +83,15 @@ app.post('/api/registerDoctor', function(req, res) {
 app.post('/api/registerEmergencyDoctor', function(req, res) {
 
   //declare variables to retrieve from request
-  var emergencyDataid=req.body.emergencyDataid;
+  var emergencyDoctorid=req.body.emergencyDoctorid;
   var licenceNumber=req.body.licenceNumber;
-  var cardId=req.body.emergencyDataid;
+  var cardId=req.body.emergencyDoctorid;
   var authorizedDoctors=["A1B2aa444","B1B2aa444","C1B2aa444","D1B2aa444","E1B2aa444","F1B2aa444","G1B2aa444","H1B2aa444","I1B2aa444","J1B2aa444","J1B2aa444"]
       if(authorizedDoctors.indexOf(licenceNumber)>-1)
       {
         console.log("authorized Doctor-"+licenceNumber);
         //else register member on the network
-        network.registerEmergencyDoctor(cardId, emergencyDataid, licenceNumber)
+        network.registerEmergencyDoctor(cardId, emergencyDoctorid, licenceNumber)
         .then((response) => {
           //return error if error in response
           if (response.error != null) {
@@ -120,12 +120,13 @@ app.post('/api/registerPatient', function(req, res) {
   var lastName=req.body.lastName;
   var cardId=req.body.patientid;
   var patientid=req.body.patientid;
+  var emergencyAccesTimeConstraints=req.body.emergencyAccesTimeConstraints
   
   //print variables
   console.log('Using param - firstname: ' + firstName + ' lastname: ' + lastName + ' cardId: ' + cardId + ' patientid: ' + patientid );
 
         //else register member on the network
-        network.registerPatient(cardId, firstName, lastName, patientid)
+        network.registerPatient(cardId, firstName, lastName, patientid,emergencyAccesTimeConstraints)
           .then((response) => {
             //return error if error in response
             if (response.error != null) {
@@ -141,7 +142,34 @@ app.post('/api/registerPatient', function(req, res) {
           });
 });
 
+//post call to retrieve doctor Consultation
+app.post('/api/getPatientData', function(req, res) {
 
+
+  var patientid = req.body.patientid;
+  var cardId = req.body.emergencyDoctorAccessCard;
+  console.log('memberData using param - ' + ' PatientId: ' + patientid + ' cardId: ' + cardId);
+  var returnData = {};
+      //get UsePoints transactions from the network
+      network.getPatientData(patientid,cardId)
+        .then((resultConsultationData) => {
+          //return error if error in response
+          if (resultConsultationData.error != null) {
+            res.json({
+              error: resultConsultationData.error
+            });
+          } else {
+            //else add transaction data to return object
+            returnData.doctoConsultations = resultConsultationData;
+            console.log("resultPatientData :"+resultConsultationData);
+            console.log("returnData :"+JSON.parse(JSON.stringify(returnData.doctoConsultations)));
+
+            res.json(JSON.parse(returnData.doctoConsultations));
+
+          }
+
+        })
+      });
 //declare port
 var port = process.env.PORT || 8000;
 if (process.env.VCAP_APPLICATION) {

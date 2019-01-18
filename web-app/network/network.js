@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 const AdminConnection = require('composer-admin').AdminConnection;
 const BusinessNetworkConnection = require('composer-client').BusinessNetworkConnection;
 const { BusinessNetworkDefinition, CertificateUtil, IdCard } = require('composer-common');
@@ -161,7 +163,7 @@ module.exports = {
   * @param {String} firstName Member first name
   * @param {String} lastName Member last name
   */
- registerPatient: async function (cardId,firstName, lastName, patientid) {
+ registerPatient: async function (cardId,firstName, lastName, patientid,emergencyAccesTimeConstraints) {
     try {
 
       console.log("Hi-"+cardId);
@@ -177,7 +179,7 @@ module.exports = {
       patient.firstName = firstName;
       patient.lastName = lastName;
       patient.patientid=patientid;
-
+      patient.emergencyAccesTimeConstraints=emergencyAccesTimeConstraints
       //add member participant
       const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
       await participantRegistry.add(patient);
@@ -213,7 +215,7 @@ module.exports = {
   * @param {String} emergencyDataid Member account number as identifier on network
   * @param {String} licenceNumber Member first name
   */
- registerEmergencyDoctor: async function (cardId,emergencyDataid, licenceNumber) {
+ registerEmergencyDoctor: async function (cardId,emergencyDoctorid, licenceNumber) {
   try {
 
     
@@ -227,7 +229,7 @@ module.exports = {
 
     //create member participant
     const emergencyDoctor = factory.newResource(namespace, 'EmergencyDoctor', cardId);
-    emergencyDoctor.emergencyDataid = emergencyDataid;
+    emergencyDoctor.emergencyDoctorid = emergencyDoctorid;
     emergencyDoctor.licenceNumber = licenceNumber;
 
     //add member participant
@@ -274,26 +276,43 @@ module.exports = {
 
     //connect to network with cardId
     businessNetworkConnection = new BusinessNetworkConnection();
-    await businessNetworkConnection.connect(cardId);
+    await businessNetworkConnection.connect('admin@emergency-network');
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
-    var st=new Date.getTime();
-    const tc= factory.newResource(namespace, 'EmergencyAccesTimeConstraints',patientId+cardId);
-    tc.emergencyAccesStartTime=st
-
-    
     //get patient from the network
     const patientRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
-    const patient = await patientRegistry.get(patientID);
-    var et=st.setMinutes(st+patient.emergencyAccesTimeConstraints);
-    tc.emergencyAccesStartTime=et
+    const patient = await patientRegistry.get(patientId);
+
+    var st=""+moment().format('MMMM Do YYYY, h:mm:ss a')
+    console.log(st);
+
+    const tc= factory.newResource(namespace, 'EmergencyAccesTimeConstraints',patientId+cardId);
+    tc.emergencyAccesStartTime=st
     
+    var et=moment().add(patient.emergencyAccesTimeConstraints, 'hours');
+    tc.emergencyAccesEndTime=""+et.format('MMMM Do YYYY, h:mm:ss a')
+    tc.emergencyDoctor=factory.newRelationship(namespace, 'EmergencyDoctor', cardId)
+    tc.patient=factory.newRelationship(namespace, 'Patient', patientId)
+//add patiant participant
+const assetRegistry = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
+await assetRegistry.add(tc);
+
+
+    await businessNetworkConnection.disconnect('admin@emergency-network');
+    
+    
+    
+
+    await businessNetworkConnection.connect(cardId);
+    factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+   
+
+
     const allAssets = [];
     const patientLabData = await businessNetworkConnection.query('patientLabTest',{ patient: 'resource:org.example.basic.Patient#'+patientId });
-    allAssets.push(patientLabData);
-
+    allAssets.push('LabTests',patientLabData);
 
     const patientDrugsData = await businessNetworkConnection.query('patientTreatmentDrugs',{ patient: 'resource:org.example.basic.Patient#'+patientId });
-    allAssets.push(patientDrugsData);
+    allAssets.push('treatmentDrugs',patientDrugsData);
 
 
     //disconnect
