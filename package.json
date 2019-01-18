@@ -3,7 +3,7 @@
     "composer": "^0.20.0"
   },
   "name": "emergency-network",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "The Hello World of Hyperledger Composer samples",
   "networkImage": "https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimage.svg",
   "networkImageanimated": "https://hyperledger.github.io/composer-sample-networks/packages/basic-sample-network/networkimageanimated.svg",
@@ -45,7 +45,7 @@
     "license-check-and-add": "~2.3.0",
     "mkdirp": "^0.5.1",
     "mocha": "^5.2.0",
-    "moment": "^2.17.1",
+    "moment": "^2.23.0",
     "nyc": "^11.0.2"
   },
   "license-check-and-add-config": {
