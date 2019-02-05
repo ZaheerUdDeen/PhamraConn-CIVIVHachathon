@@ -244,6 +244,11 @@ module.exports = {
     businessNetworkConnection = new BusinessNetworkConnection();
     await businessNetworkConnection.connect('admin@emergency-network');
     factory = businessNetworkConnection.getBusinessNetwork().getFactory();
+    
+    //get patient from the network
+    const patientRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
+    const patient = await patientRegistry.get(patientId);
+    allAssets.push('PatientPersonalInformation',patient);
     //const assetRegistryET = await businessNetworkConnection.getAssetRegistry(namespace + '.EmergencyAccesTimeConstraints');
     //const accesed = await assetRegistryET.get(patientId+cardId);
     const etq = await businessNetworkConnection.query('hasAccesed',{ et: patientId+cardId });
@@ -267,10 +272,7 @@ module.exports = {
 
 
     }else{
-        //get patient from the network
-        const patientRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
-        const patient = await patientRegistry.get(patientId);
-        allAssets.push('allAssets',patient);
+        
         var st=""+moment().format('MMMM Do YYYY, h:mm:ss a')
         console.log(st);
 
