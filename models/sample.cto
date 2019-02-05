@@ -43,6 +43,8 @@ participant Patient identified by patientid {
   o String patientid
   o String firstName
   o String lastName
+  o String dateOfBirth
+  o String address
   o Integer emergencyAccesTimeConstraints
 
 }

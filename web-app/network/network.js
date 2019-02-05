@@ -125,7 +125,7 @@ module.exports = {
   * @param {String} firstName Member first name
   * @param {String} lastName Member last name
   */
- registerPatient: async function (cardId,firstName, lastName, patientid,emergencyAccesTimeConstraints) {
+ registerPatient: async function (cardId,firstName, lastName,dateOfBirth,address, patientid,emergencyAccesTimeConstraints) {
     try {
 
       console.log("Hi-"+cardId);
@@ -140,7 +140,10 @@ module.exports = {
       const patient = factory.newResource(namespace, 'Patient', cardId);
       patient.firstName = firstName;
       patient.lastName = lastName;
+      patient.dateOfBirth=dateOfBirth;
+      patient.address=address;
       patient.patientid=patientid;
+
       patient.emergencyAccesTimeConstraints=emergencyAccesTimeConstraints
       //add member participant
       const participantRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');

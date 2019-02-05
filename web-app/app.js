@@ -118,6 +118,8 @@ app.post('/api/registerPatient', function(req, res) {
   //declare variables to retrieve from request
   var firstName=req.body.firstName;
   var lastName=req.body.lastName;
+  var address=req.body.address;
+  var dateOfBirth=req.body.dateOfBirth
   var cardId=req.body.patientid;
   var patientid=req.body.patientid;
   var emergencyAccesTimeConstraints=req.body.emergencyAccesTimeConstraints
@@ -126,7 +128,7 @@ app.post('/api/registerPatient', function(req, res) {
   console.log('Using param - firstname: ' + firstName + ' lastname: ' + lastName + ' cardId: ' + cardId + ' patientid: ' + patientid );
 
         //else register member on the network
-        network.registerPatient(cardId, firstName, lastName, patientid,emergencyAccesTimeConstraints)
+        network.registerPatient(cardId, firstName, lastName,dateOfBirth,address, patientid,emergencyAccesTimeConstraints)
           .then((response) => {
             //return error if error in response
             if (response.error != null) {
