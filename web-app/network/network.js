@@ -236,6 +236,7 @@ module.exports = {
   try {
     console.log("############################################");
 
+    const allAssets = [];
     //connect to network with cardId
     businessNetworkConnection = new BusinessNetworkConnection();
     await businessNetworkConnection.connect('admin@emergency-network');
@@ -266,7 +267,7 @@ module.exports = {
         //get patient from the network
         const patientRegistry = await businessNetworkConnection.getParticipantRegistry(namespace + '.Patient');
         const patient = await patientRegistry.get(patientId);
-
+        allAssets.push('allAssets',patient);
         var st=""+moment().format('MMMM Do YYYY, h:mm:ss a')
         console.log(st);
 
@@ -294,7 +295,6 @@ module.exports = {
    
 
 
-    const allAssets = [];
     const patientLabData = await businessNetworkConnection.query('patientLabTest',{ patient: 'resource:org.example.basic.Patient#'+patientId });
     allAssets.push('LabTests',patientLabData);
 
